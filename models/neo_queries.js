@@ -13,6 +13,7 @@ function createUser(session, user) {
 
 }
 
+//TODO: add friends property to user in neo4j
 
 function deleteUser(session, user) {
 
