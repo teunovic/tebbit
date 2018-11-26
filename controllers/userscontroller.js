@@ -32,13 +32,13 @@ function create(req,res) {
 
 }
 
-function get(req,res){
-
-    //TODO: res.send();
-}
+// function get(req,res){
+//
+//     //TODO: res.send();
+// }
 
 
 module.exports = {
     create: create,
-    get: get
+    // get: get
 };
