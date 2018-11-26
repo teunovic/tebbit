@@ -2,41 +2,38 @@ let createError = require('http-errors');
 let express = require('express');
 let mongoose = require('mongoose');
 let router = express.Router();
-
-let indexRouter = require('./routes/index');
-
-let app = express();
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.use('/', indexRouter);
+const bodyParser = require('body-parser');
+const routes = require('./routes/routes');
+const neo4j = require('neo4j-driver').v1;
+const neo = require('./neo4j_setup');
+let indexRouter = require('./routes/routes');
+const app = express();
 
 
 
-if(process.env.NODE_ENV == 'testCloud' || process.env.NODE_ENV == 'production') {
-    mongoose.connect('mongodb+srv://tbadmin:Tbtest123!@cluster0-xbiza.mongodb.net/test?retryWrites=true',
-        {useNewUrlParser: true}).then((con) => {
+mongoose.Promise = global.Promise;
 
-    });
-} else {
-    mongoose.connect('mongodb://localhost/users',
-        {useNewUrlParser: true});
-}
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+
+    mongoose.connect('mongodb+srv://tbadmin:Tbtest123!@cluster0-xbiza.mongodb.net/test?retryWrites=true', { useNewUrlParser: true });
+      console.log("connected");
+
+
+
+
+//TODO: Connect + Disconnect from Neo4J
+
+// neo.driver = neo4j.driver(
+//     'bolt://hobby-imgbemcofhjngbkeihlmpfbl.dbs.graphenedb.com:24786',
+//     neo4j.auth.basic('dev', 'b.KjsQYVOye50q.Wsu6mTnSutd91R39')
+// );
+
+process.on('exit', function() {
+    neo.driver.close();
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+app.use(bodyParser.json());
+
+routes(app);
 
 module.exports = app;
