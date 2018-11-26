@@ -61,10 +61,10 @@ function update(req,res) {
         })
         .then(() => {
             session.close();
-            res.send(replyUser);
+            res.send(User.findOne({username: name}));
         })
 
-        //TODO: RETURNS WRONG VALUE, BUT UPDATES IN MONGODB ^
+        //TODO: Doesnt update in neo4j^
 
         .catch(err => {
             // error code 11000 in mongo signals duplicate entry
