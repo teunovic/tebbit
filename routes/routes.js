@@ -20,6 +20,9 @@ module.exports = (router) =>{
     //Create a new user
     router.post('/users', UsersController.create);
 
+    //Update a user's password
+    router.put('/users', UsersController.update);
+
     //Used this for testing
     // router.get('/users', UsersController.get);
 

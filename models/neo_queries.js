@@ -19,6 +19,20 @@ function deleteUser(session, user) {
 
 }
 
+function updateUser(session, user) {
+    let queries = [];
+    queries.push(
+        session.run('MATCH (n: User {username: $username}) ' +
+            'SET n.password = $password_new ' +
+            'RETURN n',
+            {
+                password: user.password_new
+            }
+        )
+    );
+}
+
+
 
 function addFriend(session, user) {
 
@@ -34,7 +48,8 @@ function removeFriend(session, user) {
 
 module.exports = {
     createUser: createUser,
-    deleteUser: deleteUser(),
-    removeFriend: removeFriend(),
+    deleteUser: deleteUser,
+    updateUser: updateUser,
+    removeFriend: removeFriend,
     addFriend: addFriend(),
 };
