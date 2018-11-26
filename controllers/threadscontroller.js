@@ -5,6 +5,9 @@ function create(req,res) {
 
     const threadProps = req.body;
     Thread.create(threadProps)
+        .then(() => {
+            res.send(threadProps);
+        })
         .catch(err => {
             // error code 11000 in mongo signals duplicate entry
             if (err.code === 11000) {
