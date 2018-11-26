@@ -1,11 +1,25 @@
+const Thread = require('../models/threads');
+
 function create(req,res) {
+
+
     const threadProps = req.body;
-    logger.trace('user = ' + threadProps);
+    Thread.create(threadProps)
+        .catch(err => {
+            // error code 11000 in mongo signals duplicate entry
+            if (err.code === 11000) {
+                res.status(409);
+                res.send('thread already exists');
+            } else {
+                console.log('error while creating thread: ' + err);
+                res.status(400);
+                res.send(err);
+            }
+        });
 
-    User.create(threadProps)
-        .then(thread => res.status(200).json(thread).end())
-        .catch(error => next(new ApiError(error)));
-
-
-    res.status(200).json('NOT IMPLEMENTED YET').end();
 }
+
+module.exports = {
+    create: create
+};
+

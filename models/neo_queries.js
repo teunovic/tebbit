@@ -1,5 +1,15 @@
 
 function createUser(session, user) {
+    let queries = [];
+    queries.push(
+        session.run('MERGE (u: User {username: $username, password: $password}) ' +
+            'RETURN u',
+            {
+                username: user.username,
+                password: user.password
+            }
+        )
+    );
 
 }
 

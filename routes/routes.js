@@ -1,6 +1,8 @@
 let express = require('express');
 
 const UsersController = require('../controllers/userscontroller');
+const ThreadsController = require('../controllers/threadscontroller');
+
 
 let router = express.Router();
 
@@ -14,6 +16,13 @@ router.get('*', function(req, res, next) {
 
 
 module.exports = (router) =>{
-    // router.post('/users', UsersController.create)
-    // router.post('/thread', ThreadsController.create)
+
+    //Create a new user
+    router.post('/users', UsersController.create);
+
+    router.get('/users', UsersController.get);
+
+    //Create a new thread
+    router.post('/threads', ThreadsController.create);
+
 };

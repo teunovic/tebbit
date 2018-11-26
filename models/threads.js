@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ThreadSchema = new Schema({
-    Title: {
+    title: {
         type: String,
         required: true,
         unique: true,
     },
-    Content: {
+    content: {
         type: String,
         required: true,
     }
@@ -15,9 +15,9 @@ const ThreadSchema = new Schema({
 
 const CommentSchema = new Schema({
 
-    Content: String,
-    Upvotes: [],
-    Downvotes: []
+    content: String,
+    upvotes: [],
+    downvotes: []
 });
 
 const threads = mongoose.model('threads', ThreadSchema);
