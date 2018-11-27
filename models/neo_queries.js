@@ -13,10 +13,18 @@ function createUser(session, user) {
 
 }
 
-//TODO: add friends property to user in neo4j
 
 function deleteUser(session, user) {
-
+    let queries = [];
+    queries.push(
+        session.run('MATCH (u: User {username: $username, password: $password}) DETACH DELETE u ' +
+            'RETURN u',
+            {
+                username: user.username,
+                password: user.password
+            }
+        )
+    );
 }
 
 function updateUser(session, user) {

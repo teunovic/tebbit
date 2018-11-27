@@ -25,6 +25,8 @@ module.exports = (router) =>{
     router.post('/users', UsersController.create);
     //Update a user's password
     router.put('/users', UsersController.update);
+    //Delete a user
+    router.delete('/users', UsersController.delete);
 
 
     //_____FRIENDS______

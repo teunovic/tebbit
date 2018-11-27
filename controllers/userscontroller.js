@@ -76,8 +76,48 @@ function update(req,res) {
 
 }
 
+function del(req,res) {
+    const name = req.body.username;
+    const password = req.body.password;
+    const userprops = req.body;
+
+
+
+    User.findOneAndDelete({username: name, password: password})
+
+        .then(user => {
+            replyUser = user;
+            // add user with relevant nodes to neo4j
+
+            // NOTE: we have an atomicity problem here
+            session = neo.session();
+            return neoQueries.deleteUser(session, user);
+        })
+        .then(() => {
+            session.close();
+            res.send(replyUser);
+        })
+
+        //TODO: ERRORHANDLING
+
+        .catch(err => {
+            // error code 11000 in mongo signals duplicate entry
+            if (err.code === 11000) {
+                res.status(409);
+                res.send('user does not exist');
+            } else {
+                console.log('error in updating user');
+                res.status(401);
+                res.send("Password incorrect");
+            }
+        });
+
+
+}
+
 module.exports = {
     create: create,
-    update: update
+    update: update,
+    delete: del
     // get: get
 };
