@@ -11,13 +11,8 @@ const app = express();
 mongoose.Promise = global.Promise;
 
 
-    mongoose.connect('mongodb+srv://tbadmin:Tbtest123!@cluster0-xbiza.mongodb.net/Tebbit?retryWrites=true', { useNewUrlParser: true });
-      console.log("MongoDB connected");
-
-
-
-
-//TODO: Connect + Disconnect from Neo4J
+mongoose.connect('mongodb+srv://tbadmin:Tbtest123!@cluster0-xbiza.mongodb.net/Tebbit?retryWrites=true', { useNewUrlParser: true });
+console.log("MongoDB connected");
 
 neo.driver = neo4j.driver(
     'bolt://hobby-anjoodfghkjagbkebgnhcfbl.dbs.graphenedb.com:24786',
@@ -25,9 +20,9 @@ neo.driver = neo4j.driver(
     console.log("Neo4j connected");
 
 
-// process.on('exit', function() {
-//     neo.driver.close();
-// });
+process.on('exit', function() {
+    neo.driver.close();
+});
 
 
 app.use(bodyParser.json());

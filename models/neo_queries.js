@@ -34,13 +34,29 @@ function updateUser(session, user) {
 
 
 
-function addFriend(session, user) {
-
+function addFriend(session, userName, otherName) {
+    return session.run(
+        'MATCH (user1: User {username: $userName}), (user2: User {username: $otherName}) ' +
+        'CREATE (user1)-[:FRIEND]->(user2) ' +
+        'CREATE (user2)-[:FRIEND]->(user1) ' +
+        'RETURN user1, user2',
+        {
+            userName: userName,
+            otherName: otherName
+        }
+    );
 }
 
 
-function removeFriend(session, user) {
-
+function removeFriend(session, userName, otherName) {
+    return session.run(
+        'MATCH (user1: User {username: $userName})-[r:FRIEND]-(user2: User {username: $otherName}) ' +
+        'DELETE r',
+        {
+            userName: userName,
+            otherName: otherName
+        }
+    );
 }
 
 
@@ -51,5 +67,5 @@ module.exports = {
     deleteUser: deleteUser,
     updateUser: updateUser,
     removeFriend: removeFriend,
-    addFriend: addFriend(),
+    addFriend: addFriend,
 };

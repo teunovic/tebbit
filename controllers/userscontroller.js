@@ -33,11 +33,6 @@ function create(req,res) {
 
 }
 
-// function get(req,res){
-//
-//     //TODO: res.send();
-// }
-
 
 
 
