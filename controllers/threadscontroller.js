@@ -31,7 +31,7 @@ function edit(req,res) {
 
     Thread.findByIdAndUpdate(req.params.id,{content: newcontent})
         .then(() => {
-            res.send("Thread successfully updated");
+            res.send("Thread successfully updated.");
 
         })
         .catch(err => {
