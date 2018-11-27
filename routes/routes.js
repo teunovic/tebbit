@@ -42,5 +42,9 @@ module.exports = (router) =>{
 
     //Create a new thread
     router.post('/threads', ThreadsController.create);
+    //Edit content of thread
+    router.put('/threads/:id', ThreadsController.edit);
+
+
 
 };

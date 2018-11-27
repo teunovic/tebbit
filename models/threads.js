@@ -13,6 +13,8 @@ const ThreadSchema = new Schema({
     }
 });
 
+//TODO: Hier moet dus een user in zitten
+
 const CommentSchema = new Schema({
 
     content: String,
