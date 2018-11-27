@@ -46,7 +46,6 @@ function addFriend(session, userName, otherName) {
     return session.run(
         'MATCH (user1: User {username: $userName}), (user2: User {username: $otherName}) ' +
         'CREATE (user1)-[:FRIEND]->(user2) ' +
-        'CREATE (user2)-[:FRIEND]->(user1) ' +
         'RETURN user1, user2',
         {
             userName: userName,
@@ -58,11 +57,12 @@ function addFriend(session, userName, otherName) {
 
 function removeFriend(session, userName, otherName) {
     return session.run(
-        'MATCH (user1: User {username: $userName})-[r:FRIEND]-(user2: User {username: $otherName}) ' +
+        'MATCH (user1:User)-[r:FRIEND]-(user2:User) ' +
+        'WHERE (user1.username = $username1 AND user2.username = $username2) OR (user1.username = $username2 AND user2.username = $username1) ' +
         'DELETE r',
         {
-            userName: userName,
-            otherName: otherName
+            username1: userName,
+            username2: otherName
         }
     );
 }

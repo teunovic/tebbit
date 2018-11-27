@@ -12,9 +12,8 @@ function create(req,res) {
 
             // NOTE: we have an atomicity problem here
             session = neo.session();
-            return neoQueries.createUser(session, user);
-        })
-        .then(() => {
+            neoQueries.createUser(session, user);
+
             session.close();
             res.send(replyUser);
         })
@@ -40,36 +39,18 @@ function update(req,res) {
     const name = req.body.username;
     const passwordold = req.body.password;
     const passwordnew = req.body.password_new;
-    const userprops = req.body;
-
-
 
     User.findOneAndUpdate({username: name, password: passwordold}, {password: passwordnew})
-
         .then(user => {
-            replyUser = user;
-            // add user with relevant nodes to neo4j
-
-            // NOTE: we have an atomicity problem here
-            session = neo.session();
-            return neoQueries.updateUser(session, user);
-        })
-        .then(() => {
-            session.close();
             res.send(User.findOne({username: name}));
         })
-
-        //TODO: Doesnt update in neo4j^
-
         .catch(err => {
             // error code 11000 in mongo signals duplicate entry
             if (err.code === 11000) {
-                res.status(409);
-                res.send('user does not exist');
+                res.status(409).send('user does not exist');
             } else {
                 console.log('error in updating user');
-                res.status(401);
-                res.send("Password incorrect");
+                res.status(401).send("Password incorrect");
             }
         });
 
@@ -79,27 +60,17 @@ function update(req,res) {
 function del(req,res) {
     const name = req.body.username;
     const password = req.body.password;
-    const userprops = req.body;
-
-
 
     User.findOneAndDelete({username: name, password: password})
 
         .then(user => {
             replyUser = user;
-            // add user with relevant nodes to neo4j
-
-            // NOTE: we have an atomicity problem here
-            session = neo.session();
-            return neoQueries.deleteUser(session, user);
+            neoQueries.deleteUser(session, user);
+            return;
         })
         .then(() => {
-            session.close();
             res.send(replyUser);
         })
-
-        //TODO: ERRORHANDLING
-
         .catch(err => {
             // error code 11000 in mongo signals duplicate entry
             if (err.code === 11000) {

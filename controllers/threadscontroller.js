@@ -1,9 +1,10 @@
-const Thread = require('../models/threads');
+const threads = require('../models/threads');
+const ErrorResponse = require('../response_models/errorresponse');
 
 function create(req,res) {
 
     const threadProps = req.body;
-    Thread.create(threadProps)
+    threads.Thread.create(threadProps)
         .then(() => {
             res.send(threadProps);
         })
@@ -29,7 +30,7 @@ function edit(req,res) {
 
     //TODO: You shouldn't be able to change the title of the thread...
 
-    Thread.findByIdAndUpdate(req.params.id,{content: newcontent})
+    threads.Thread.findByIdAndUpdate(req.params.id,{content: newcontent})
         .then(() => {
             res.send("Thread successfully updated.");
 
@@ -48,8 +49,34 @@ function edit(req,res) {
 
 }
 
+function addComment(req, res) {
+    let threadid = req.params.tid;
+    let username = req.body.username;
+    let parentComment = req.body.parentComment || null;
+    let content = req.body.content;
+
+    threads.Thread.findById(threadid)
+        .then(thread => {
+            console.log('thread found');
+            console.log(thread);
+            let parent = null;
+            if(parentComment) {
+                parent = thread.findComment(thread.comments, parentComment);
+                if(!parent) {
+                    res.status(409).json(new ErrorResponse(1, "Parent is unfound"));
+                    return;
+                }
+                console.log(parent);
+            }
+        })
+        .catch(error => {
+            res.status(404).json(new ErrorResponse(1, "Could not find thread"));
+        });
+}
+
 module.exports = {
     create: create,
-    edit: edit
+    edit: edit,
+    addComment: addComment
 };
 
