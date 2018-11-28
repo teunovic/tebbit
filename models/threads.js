@@ -36,7 +36,7 @@ let autoPopulateChildren = function(next) {
 
 commentSchema
     .pre('findOne', autoPopulateChildren)
-    .pre('find', autoPopulateChildren)
+    .pre('find', autoPopulateChildren);
 
 threadSchema.virtual('downvotes').get(() => {
     return this.votes.filter(v => {

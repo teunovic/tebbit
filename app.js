@@ -7,7 +7,6 @@ const neo = require('./neo4j_setup');
 const app = express();
 
 
-
 mongoose.Promise = global.Promise;
 
 

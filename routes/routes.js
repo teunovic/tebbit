@@ -5,11 +5,7 @@ const threadsController = require('../controllers/threadscontroller');
 const friendsController = require('../controllers/friendscontroller');
 const commentsController = require('../controllers/commentscontroller');
 
-let router = express.Router();
-
-
-module.exports = (router) =>{
-
+module.exports = (router) => {
 
     // _____USERS______
 
@@ -43,7 +39,7 @@ module.exports = (router) =>{
     // Commenting
     router.post('/threads/:tid/comments', commentsController.add);
     router.delete('/threads/:tid/comments/:id', commentsController.remove);
-    router.post('/threads/:tid/comments/vote', commentsController.vote);
+    router.post('/threads/:tid/comments/:id/vote', commentsController.vote);
 
 
 };

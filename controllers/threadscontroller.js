@@ -143,16 +143,18 @@ function vote(req, res) {
                         res.status(404).json(new ErrorResponse(1, "Could not find user").getResponse());
                         return;
                     }
-                    thread.votes.delete({voter: user._id})
-                        .then(() => {
-                            let vote = new threads.Vote({voter: user._id, isUpvote: upvote})
-                            thread.votes.push(vote);
-                            thread.save()
-                                .then(updatedThread => {
-                                    res.status(200).json(updatedThread);
-                                })
-                        });
-
+                    // Remove existing votes by this user
+                    for(i = thread.votes.length - 1; i >= 0; i--) {
+                        let v = thread.votes[i];
+                        if(v.voter.equals(user._id))
+                            thread.votes.splice(i, 1);
+                    }
+                    let vote = new threads.Vote({voter: user._id, isUpvote: upvote});
+                    thread.votes.push(vote);
+                    thread.save()
+                        .then(updatedThread => {
+                            res.status(200).json(updatedThread);
+                        })
                 })
                 .catch(err => {
                     console.error(err);
@@ -163,7 +165,6 @@ function vote(req, res) {
             console.error(err);
             res.status(501).json(new ErrorResponse(-1, "Something unexpected went wrong").getResponse());
         })
-
 }
 
 module.exports = {

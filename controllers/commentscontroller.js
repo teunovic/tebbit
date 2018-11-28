@@ -116,7 +116,54 @@ function remove(req, res) {
 }
 
 function vote(req, res) {
+    let threadId = req.params.tid;
+    let commentId = req.params.id;
+    let username = req.body.username;
+    let upvote = req.body.vote !== "down";
 
+    if(!mongoose.Types.ObjectId.isValid(threadId) || !mongoose.Types.ObjectId.isValid(threadId)) {
+        res.status(422).json(new ErrorResponse(1, "Invalid thread id or comment id").getResponse());
+        return;
+    }
+
+    threads.Comment.findById(commentId)
+        .then(comment => {
+            if(!comment) {
+                res.status(404).json(new ErrorResponse(1, "Could not find comment").getResponse());
+                return;
+            }
+            if(!comment.thread.equals(threadId)) {
+                res.status(422).json(new ErrorResponse(1, "Comment does not belong to this thread").getResponse());
+                return;
+            }
+            users.User.findOne({username: username})
+                .then(user => {
+                    if(!user) {
+                        res.status(404).json(new ErrorResponse(1, "Could not find user").getResponse());
+                        return;
+                    }
+                    // Remove existing votes by this user
+                    for(i = comment.votes.length - 1; i >= 0; i--) {
+                        let v = comment.votes[i];
+                        if(v.voter.equals(user._id))
+                            comment.votes.splice(i, 1);
+                    }
+                    let vote = new threads.Vote({voter: user._id, isUpvote: upvote});
+                    comment.votes.push(vote);
+                    comment.save()
+                        .then(updatedComment => {
+                            res.status(200).json(updatedComment);
+                        })
+                })
+                .catch(err => {
+                    console.error(err);
+                    res.status(501).json(new ErrorResponse(-2, "Something unexpected went wrong").getResponse());
+                })
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(501).json(new ErrorResponse(-1, "Something unexpected went wrong").getResponse());
+        })
 }
 
 module.exports = {
