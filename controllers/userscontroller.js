@@ -26,17 +26,17 @@ function create(req,res) {
 
 
 function update(req,res) {
-    const name = req.body.username;
-    const passwordold = req.body.password;
-    const passwordnew = req.body.password_new;
+    const username = req.body.username;
+    const oldPassword = req.body.password;
+    const newPassword = req.body.password_new;
 
-    if(passwordold === passwordnew) {
+    if(oldPassword === newPassword) {
         res.status(409).json(new ErrorResponse(1, "New password must be different than current password"));
         return;
     }
 
     let options = {new: true}; // De user => is nu de geupdatete, anders bleef het de oude
-    users.User.findOneAndUpdate({username: name, password: passwordold}, {password: passwordnew}, options)
+    users.User.findOneAndUpdate({username: username, password: oldPassword}, {password: newPassword}, options)
         .then(user => {
             if(!user) {
                 res.status(404).json(new ErrorResponse(1, "Username or old password incorrect").getResponse());
@@ -51,13 +51,13 @@ function update(req,res) {
 }
 
 function del(req,res) {
-    const name = req.body.username;
+    const username = req.body.username;
     const password = req.body.password;
 
-    users.User.findOneAndDelete({username: name, password: password})
+    users.User.findOneAndDelete({username: username, password: password})
         .then(user => {
             if(!user) {
-                res.status(401).json(new ErrorResponse(1, "Username or password incorrect"));
+                res.status(401).json(new ErrorResponse(1, "Username or password incorrect").getResponse());
                 return;
             }
             neoQueries.deleteUser(session, user);
@@ -65,7 +65,7 @@ function del(req,res) {
         })
         .catch(err => {
             console.error(err);
-            res.status(500).send("Something went wrong deleting your account");
+            res.status(501).json(new ErrorResponse(-1, "Something went wrong deleting your account").getResponse());
         });
 
 

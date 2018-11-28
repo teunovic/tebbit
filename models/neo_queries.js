@@ -2,11 +2,10 @@
 function createUser(session, user) {
     let queries = [];
     queries.push(
-        session.run('MERGE (u: User {username: $username, password: $password}) ' +
+        session.run('MERGE (u: User {username: $username}) ' +
             'RETURN u',
             {
-                username: user.username,
-                password: user.password
+                username: user.username
             }
         )
     );
@@ -17,30 +16,14 @@ function createUser(session, user) {
 function deleteUser(session, user) {
     let queries = [];
     queries.push(
-        session.run('MATCH (u: User {username: $username, password: $password}) DETACH DELETE u ' +
+        session.run('MATCH (u: User {username: $username}) DETACH DELETE u ' +
             'RETURN u',
             {
-                username: user.username,
-                password: user.password
+                username: user.username
             }
         )
     );
 }
-
-function updateUser(session, user) {
-    let queries = [];
-    queries.push(
-        session.run('MATCH (n: User {username: $username}) ' +
-            'SET n.password = $password_new ' +
-            'RETURN n',
-            {
-                password: user.password_new
-            }
-        )
-    );
-}
-
-
 
 function addFriend(session, userName, otherName) {
     return session.run(
@@ -67,13 +50,25 @@ function removeFriend(session, userName, otherName) {
     );
 }
 
+function getFriendship(session, user1, user2) {
+    return session.run(
+        'MATCH (user1:User)-[r:FRIEND]-(user2:User) ' +
+        'WHERE (user1.username = $username1 AND user2.username = $username2) OR (user1.username = $username2 AND user2.username = $username1) ' +
+        'RETURN r',
+        {
+            username1: user1,
+            username2: user2
+        }
+    );
+}
+
 
 
 
 module.exports = {
-    createUser: createUser,
-    deleteUser: deleteUser,
-    updateUser: updateUser,
-    removeFriend: removeFriend,
-    addFriend: addFriend,
+    createUser,
+    deleteUser,
+    removeFriend,
+    addFriend,
+    getFriendship
 };

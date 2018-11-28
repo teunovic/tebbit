@@ -7,6 +7,7 @@ const voteSchema = new Schema({
 });
 
 const commentSchema = new Schema({
+    thread: { type: Schema.ObjectId, ref: 'Thread' },
     author : { type: Schema.ObjectId, ref: 'User' },
     content: { type: String, required: true },
     comments: [{ type: Schema.ObjectId, ref: 'Comment' }],
@@ -27,6 +28,15 @@ const threadSchema = new Schema({
     comments: [{ type: Schema.ObjectId, ref: 'Comment' }],
     votes: [voteSchema]
 });
+
+let autoPopulateChildren = function(next) {
+    this.populate('comments');
+    next();
+};
+
+commentSchema
+    .pre('findOne', autoPopulateChildren)
+    .pre('find', autoPopulateChildren)
 
 threadSchema.virtual('downvotes').get(() => {
     return this.votes.filter(v => {

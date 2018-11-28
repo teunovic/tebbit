@@ -3,17 +3,9 @@ let express = require('express');
 const usersController = require('../controllers/userscontroller');
 const threadsController = require('../controllers/threadscontroller');
 const friendsController = require('../controllers/friendscontroller');
-
+const commentsController = require('../controllers/commentscontroller');
 
 let router = express.Router();
-
-
-/* GET home page. */
-router.get('*', function(req, res, next) {
-  res.status(200).json({'yeet': {'or': {'be:': 'yeeten'}}});
-});
-
-
 
 
 module.exports = (router) =>{
@@ -42,12 +34,16 @@ module.exports = (router) =>{
 
     //Create a new thread
     router.post('/threads', threadsController.create);
-    //Edit content of thread
+    router.get('/threads/:id', threadsController.get);
+    router.get('/threads', threadsController.getAll);
     router.put('/threads/:id', threadsController.edit);
+    router.delete('/threads/:id', threadsController.remove);
+    router.post('/threads/:id/vote', threadsController.vote);
 
     // Commenting
-    router.post('/threads/:tid/comments', threadsController.addComment);
-
+    router.post('/threads/:tid/comments', commentsController.add);
+    router.delete('/threads/:tid/comments/:id', commentsController.remove);
+    router.post('/threads/:tid/comments/vote', commentsController.vote);
 
 
 };
