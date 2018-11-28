@@ -8,12 +8,13 @@ const voteSchema = new Schema({
 
 const commentSchema = new Schema({
     author : { type: Schema.ObjectId, ref: 'User' },
-    content: String,
+    content: { type: String, required: true },
+    comments: [{ type: Schema.ObjectId, ref: 'Comment' }],
     votes: [voteSchema]
 });
 
 const threadSchema = new Schema({
-    author : { type: Schema.ObjectId, ref: 'User' },
+    author : { type: Schema.ObjectId, ref: 'User', required: true },
     title: {
         type: String,
         required: true,
@@ -23,7 +24,7 @@ const threadSchema = new Schema({
         type: String,
         required: true,
     },
-    comments: [commentSchema],
+    comments: [{ type: Schema.ObjectId, ref: 'Comment' }],
     votes: [voteSchema]
 });
 
@@ -47,22 +48,4 @@ const Vote = mongoose.model('Vote', voteSchema);
 const Comment = mongoose.model('Comment', commentSchema);
 const Thread = mongoose.model('Thread', threadSchema);
 
-function findComment(comments, commentId) {
-    if(comments.length === 0) {
-        return null;
-    }
-    for(let i = 0; i < comments.length; i++) {
-        let c = comments[i];
-        if(c._id === commentId) {
-            return c;
-        }
-        if(c.comments.length !== 0) {
-            let sc = findComment(c.comments, commentId);
-            if(sc)
-                return sc;
-        }
-    }
-    return null;
-}
-
-module.exports = {Thread, Comment, Vote, findComment: findComment};
+module.exports = {Thread, Comment, Vote};
