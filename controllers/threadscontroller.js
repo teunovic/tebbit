@@ -14,6 +14,7 @@ function get(req, res) {
     threads.Thread.findById(threadId)
         .populate("comments")
         .then(thread => {
+            console.log(thread.upvotes);
             res.status(200).json(thread);
         })
         .catch(err => {

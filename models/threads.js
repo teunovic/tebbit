@@ -39,15 +39,13 @@ commentSchema
     .pre('find', autoPopulateChildren);
 
 threadSchema.virtual('downvotes').get(() => {
-    return this.votes.filter(v => {
-        return !v.isUpvote;
-    })
+    return this.votes.find({upvote: false});
 });
 
-threadSchema.virtual('upvotes').get(() => {
-    return this.votes.filter(v => {
-        return v.isUpvote;
-    })
+threadSchema.virtual('upvotes').get((t) => {
+    console.log(t);
+    console.log(t.votes);
+    return this.votes.find({upvote: true});
 });
 
 threadSchema.virtual('points').get(function(){
