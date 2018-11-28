@@ -1,35 +1,25 @@
-
-const User = require('../models/users');
+const users = require('../models/users');
 const neo = require('../neo4j_setup');
 const neoQueries = require('../models/neo_queries');
+const ErrorResponse = require('../response_models/errorresponse');
 
 function create(req,res) {
     const userProps = req.body;
-    User.create(userProps)
+    users.User.create(userProps)
         .then(user => {
-            replyUser = user;
-            // add user with relevant nodes to neo4j
-
-            // NOTE: we have an atomicity problem here
-            session = neo.session();
+            let session = neo.session();
             neoQueries.createUser(session, user);
-
             session.close();
-            res.send(replyUser);
+            res.status(200).json(user);
         })
         .catch(err => {
-            // error code 11000 in mongo signals duplicate entry
             if (err.code === 11000) {
-                res.status(409);
-                res.send('user already exists');
+                res.status(409).json(new ErrorResponse(1, "Username taken").getResponse());
             } else {
-                console.log('error in create user: ' + err);
-                res.status(400);
-                res.send(err);
+                console.error(err);
+                res.status(400).json(new ErrorResponse(2, "Could not create user").getResponse());
             }
         });
-
-
 }
 
 
@@ -40,47 +30,42 @@ function update(req,res) {
     const passwordold = req.body.password;
     const passwordnew = req.body.password_new;
 
-    User.findOneAndUpdate({username: name, password: passwordold}, {password: passwordnew})
+    if(passwordold === passwordnew) {
+        res.status(409).json(new ErrorResponse(1, "New password must be different than current password"));
+        return;
+    }
+
+    let options = {new: true}; // De user => is nu de geupdatete, anders bleef het de oude
+    users.User.findOneAndUpdate({username: name, password: passwordold}, {password: passwordnew}, options)
         .then(user => {
-            res.send(User.findOne({username: name}));
+            if(!user) {
+                res.status(404).json(new ErrorResponse(1, "Username or old password incorrect").getResponse());
+                return;
+            }
+            res.json(user);
         })
         .catch(err => {
-            // error code 11000 in mongo signals duplicate entry
-            if (err.code === 11000) {
-                res.status(409).send('user does not exist');
-            } else {
-                console.log('error in updating user');
-                res.status(401).send("Password incorrect");
-            }
+            console.error(err);
+            res.status(500).send("Something went wrong updating your password");
         });
-
-
 }
 
 function del(req,res) {
     const name = req.body.username;
     const password = req.body.password;
 
-    User.findOneAndDelete({username: name, password: password})
-
+    users.User.findOneAndDelete({username: name, password: password})
         .then(user => {
-            replyUser = user;
+            if(!user) {
+                res.status(401).json(new ErrorResponse(1, "Username or password incorrect"));
+                return;
+            }
             neoQueries.deleteUser(session, user);
-            return;
-        })
-        .then(() => {
-            res.send(replyUser);
+            res.status(200).json({});
         })
         .catch(err => {
-            // error code 11000 in mongo signals duplicate entry
-            if (err.code === 11000) {
-                res.status(409);
-                res.send('user does not exist');
-            } else {
-                console.log('error in updating user');
-                res.status(401);
-                res.send("Password incorrect");
-            }
+            console.error(err);
+            res.status(500).send("Something went wrong deleting your account");
         });
 
 
