@@ -19,8 +19,6 @@ module.exports = (router) => {
     router.post('/friends', friendsController.addFriend);
     router.delete('/friends', friendsController.removeFriend);
 
-
-
     //_____THREADS______
 
     router.post('/threads', threadsController.create);

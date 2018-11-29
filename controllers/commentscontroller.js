@@ -21,7 +21,7 @@ function add(req, res) {
 
     console.log('param tid = ' + threadId);
 
-    users.User.findOne({username: username})
+    users.User.findOne({username: username, nonActive: false})
         .then(user => {
             if(!user) {
                 console.log("user not found");
@@ -136,7 +136,7 @@ function vote(req, res) {
                 res.status(422).json(new ErrorResponse(1, "Comment does not belong to this thread").getResponse());
                 return;
             }
-            users.User.findOne({username: username})
+            users.User.findOne({username: username, nonActive: false})
                 .then(user => {
                     if(!user) {
                         res.status(404).json(new ErrorResponse(1, "Could not find user").getResponse());

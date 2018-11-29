@@ -15,7 +15,7 @@ const commentSchema = new Schema({
 });
 
 const threadSchema = new Schema({
-    author : { type: Schema.ObjectId, ref: 'User', required: true },
+    author: {type: Schema.ObjectId, ref: 'User', required: true},
     title: {
         type: String,
         required: true,
@@ -25,31 +25,42 @@ const threadSchema = new Schema({
         type: String,
         required: true,
     },
-    comments: [{ type: Schema.ObjectId, ref: 'Comment' }],
+    comments: [{type: Schema.ObjectId, ref: 'Comment'}],
     votes: [voteSchema]
 });
+threadSchema.set('toObject', {virtuals: true});
 
 let autoPopulateChildren = function(next) {
     this.populate('comments');
     next();
 };
 
-commentSchema
+commentSchema // Zorg dat subcomments automatisch worden opgehaald
     .pre('findOne', autoPopulateChildren)
     .pre('find', autoPopulateChildren);
 
-threadSchema.virtual('downvotes').get(() => {
-    return this.votes.find({upvote: false});
-});
+let calculateVotes = function(up) {
+    return function() {
+        let amount = 0;
+        for(i = 0; i < this.votes.length; i++) {
+            if(this.votes[i].isUpvote === up)
+                amount++;
+        }
+        return amount;
+    }
+};
 
-threadSchema.virtual('upvotes').get((t) => {
-    console.log(t);
-    console.log(t.votes);
-    return this.votes.find({upvote: true});
-});
+threadSchema.virtual('upvotes').get(calculateVotes(true));
+threadSchema.virtual('downvotes').get(calculateVotes(false));
 
-threadSchema.virtual('points').get(function(){
-    return this.upvotes.length - this.downvotes.length;
+commentSchema.virtual('upvotes').get(calculateVotes(true));
+commentSchema.virtual('downvotes').get(calculateVotes(false));
+
+threadSchema.virtual('points').get(function() {
+    return this.upvotes - this.downvotes;
+});
+commentSchema.virtual('points').get(function() {
+    return this.upvotes - this.downvotes;
 });
 
 const Vote = mongoose.model('Vote', voteSchema);

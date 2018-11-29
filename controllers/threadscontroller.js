@@ -14,8 +14,12 @@ function get(req, res) {
     threads.Thread.findById(threadId)
         .populate("comments")
         .then(thread => {
-            console.log(thread.upvotes);
-            res.status(200).json(thread);
+            if(!thread) {
+                res.status(404).json(new ErrorResponse(1, "Could not find thread").getResponse());
+                return;
+            }
+            // .toObject({virtuals: true}) om de berekende up/downvotes erbij te doen
+            res.status(200).json(thread.toObject());
         })
         .catch(err => {
             console.error(err);
@@ -32,23 +36,28 @@ function getAll(req, res) {
     4. aflopend gesorteerd op basis van het totaal aantal comments in de thread
      */
     let sort = req.query.sort || 1;
-    threads.Thread.find({}).sort({'upvotes': 1})
+    threads.Thread.find({})
+        .sort({'upvotes': 1})
         .then(result => {
-            res.status(200).json(result);
+            let response = [];
+            result.forEach(r => {
+                // Zorg dat de virtuals (up/downvotes) erbij worden verstuurd
+                response.push(r.toObject());
+            });
+            res.status(200).json(response);
         })
 }
 
 function create(req,res) {
-    users.User.findOne({username: req.body.username})
+    users.User.findOne({username: req.body.username, nonActive: false})
         .then(user => {
             if(!user) {
                 res.status(409).json(new ErrorResponse(1, "Could not find user").getResponse());
                 return;
             }
-            console.log(user);
             threads.Thread.create({author: user._id, title: req.body.title, content: req.body.content})
                 .then(thread => {
-                    res.status(200).json(thread);
+                    res.status(200).json(thread.toObject({virtuals: true}));
                 })
                 .catch(err => {
                     console.log('error while creating thread: ' + err);

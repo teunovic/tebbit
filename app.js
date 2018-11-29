@@ -11,6 +11,7 @@ mongoose.Promise = global.Promise;
 
 
 mongoose.connect('mongodb+srv://tbadmin:Tbtest123!@cluster0-xbiza.mongodb.net/Tebbit?retryWrites=true', { useNewUrlParser: true });
+mongoose.set('useCreateIndex', true);
 console.log("MongoDB connected");
 
 neo.driver = neo4j.driver(

@@ -4,8 +4,7 @@ const neoQueries = require('../models/neo_queries');
 const ErrorResponse = require('../response_models/errorresponse');
 
 function create(req,res) {
-    const userProps = req.body;
-    users.User.create(userProps)
+    users.User.create({username: req.body.username, password: req.body.password})
         .then(user => {
             let session = neo.session();
             neoQueries.createUser(session, user);
@@ -17,13 +16,10 @@ function create(req,res) {
                 res.status(409).json(new ErrorResponse(1, "Username taken").getResponse());
             } else {
                 console.error(err);
-                res.status(400).json(new ErrorResponse(2, "Could not create user").getResponse());
+                res.status(501).json(new ErrorResponse(2, "Could not create user").getResponse());
             }
         });
 }
-
-
-
 
 function update(req,res) {
     const username = req.body.username;
@@ -36,7 +32,7 @@ function update(req,res) {
     }
 
     let options = {new: true}; // De user => is nu de geupdatete, anders bleef het de oude
-    users.User.findOneAndUpdate({username: username, password: oldPassword}, {password: newPassword}, options)
+    users.User.findOneAndUpdate({username: username, password: oldPassword, nonActive: false}, {password: newPassword}, options)
         .then(user => {
             if(!user) {
                 res.status(404).json(new ErrorResponse(1, "Username or old password incorrect").getResponse());
@@ -55,7 +51,7 @@ function del(req,res) {
     const password = req.body.password;
     let session = neo.session();
 
-    users.User.findOneAndDelete({username: username, password: password})
+    users.User.findOneAndUpdate({username: username, password: password, nonActive: false}, {nonActive: true})
         .then(user => {
             if(!user) {
                 res.status(401).json(new ErrorResponse(1, "Username or password incorrect").getResponse());
@@ -66,7 +62,7 @@ function del(req,res) {
         })
         .catch(err => {
             console.error(err);
-            res.status(501).json(new ErrorResponse(-1, "Something went wrong deleting your account").getResponse());
+            res.status(501).json(new ErrorResponse(-1, "Something went wrong de-activating your account").getResponse());
         });
 
 
