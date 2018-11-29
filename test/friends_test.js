@@ -7,6 +7,9 @@ chai.should();
 chai.use(chaiHttp);
 
 
+//TODO:                 console.log("Both users need to exist");
+// This happens  ^ 
+
 
 describe('Friends', () => {
     it('Saves a friendship', (done) => {
@@ -25,17 +28,16 @@ describe('Friends', () => {
                 });
             done();
         }
-
     );
-        it('Deletes a friendship', (done) => {
-            const user1 = new users.User({username: 'user1', password: '124'});
-            const user2 = new users.User({username: 'user2', password: '124'});
-            chai.request(server)
-                .post('/friends')
-                .send({
-                    'username': 'user1',
-                    'other_username': 'user2'
-                }).then(() =>{
+    it('Deletes a friendship', (done) => {
+        const user1 = new users.User({username: 'user1', password: '124'});
+        const user2 = new users.User({username: 'user2', password: '124'});
+        chai.request(server)
+            .post('/friends')
+            .send({
+                'username': 'user1',
+                'other_username': 'user2'
+            }).then(() => {
 
 
             chai.request(server)
@@ -48,8 +50,11 @@ describe('Friends', () => {
                     res.should.have.status(200);
 
                 });
-            });
-            done()
-        })
+        });
+        done()
     });
+    it('Done', (done) => {
+        done();
+    });
+});
 
