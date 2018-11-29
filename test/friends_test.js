@@ -1,4 +1,3 @@
-const assert = require('assert');
 const users = require('../models/users');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
