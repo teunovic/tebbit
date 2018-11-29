@@ -40,19 +40,26 @@ describe('Threads', () => {
 
         threads.Thread.create({author: '5bfffc8d59be863ddc72848e', title: 'title1', content: 'content1'})
             .then(() => {
-                chai.request(server)
-                    .get('/threads')
-                    .end((err, res) => {
-                        res.should.have.status(200);
-                        const success = res.body;
-                        success.should.be.an('array');
-                        success.should.have.property(['comments', '_id', 'author', 'title', 'content', 'votes', '__v']);
-                        // success.should.have.property('author').equals('5bfffc8d59be863ddc72848e');
-                        // success.should.have.property('title').equals('title1');
-                        // success.should.have.property('content').equals('content1');
-                        done();
+                threads.Thread.create({author: '5bfffc8d59be863ddc72848e', title: 'title2', content: 'content2'})
+                    .then(() => {
 
+                        chai.request(server)
+                            .get('/threads')
+                            .end((err, res) => {
+                                res.should.have.status(200);
+                                const success = res.body;
+                                success.should.be.an('array');
+                                success.should.have.length(2);
+                                // success.should.have.property('author').equals('5bfffc8d59be863ddc72848e');
+                                // success.should.have.property('title').equals('title1');
+                                // success.should.have.property('content').equals('content1');
+                                done();
+
+                            });
                     });
             });
-    })
+    });
+    it('Done', (done) => {
+        done();
+    });
 });
