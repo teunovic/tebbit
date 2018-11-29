@@ -44,6 +44,26 @@ function getAll(req, res) {
                 // Zorg dat de virtuals (up/downvotes) erbij worden verstuurd
                 response.push(r.toObject());
             });
+            if(sort == 2) {
+                response.sort((a, b) => {
+                    return a.upvotes === b.upvotes ? 0 :
+                        a.upvotes < b.upvotes ? 1 : -1;
+                });
+            } else if(sort == 3) {
+                response.sort((a, b) => {
+                    return a.points === b.points ? 0 :
+                        a.points < b.points ? 1 : -1;
+                });
+            } else if(sort == 4) {
+                response.sort((a, b) => {
+
+                });
+            }
+            // Zorg dat ná het berekenen van upvotes enz bij het sorteren,
+            // het votes-field wordt weggehaald, users mogen alleen het aantal weten, niet wíe heeft gevotet
+            response.forEach(r => {
+                delete r.votes;
+            });
             res.status(200).json(response);
         })
 }
