@@ -53,6 +53,7 @@ function update(req,res) {
 function del(req,res) {
     const username = req.body.username;
     const password = req.body.password;
+    let session = neo.session();
 
     users.User.findOneAndDelete({username: username, password: password})
         .then(user => {
