@@ -22,20 +22,20 @@ describe('Users', () => {
                 const success = res.body;
                 success.should.have.property('username').equals('user1');
                 success.should.have.property('password').equals('123');
+                done()
 
             });
-        done()
     });
 
     it('Changes a user\'s password', (done) => {
-        const user1 = new users.User({username: 'user2', password: '124'});
+        const user1 = new users.User({username: 'user1', password: '124'});
         user1.save()
             .then(() => {
 
                 chai.request(server)
                     .put('/users')
                     .send({
-                        'username': 'user2',
+                        'username': 'user1',
                         'password': '124',
                         'password_new': '1234'
                     })
@@ -44,11 +44,11 @@ describe('Users', () => {
                         const success = res.body;
                         success.should.have.property('username').equals('user1');
                         success.should.have.property('password').equals('1234');
+                        done();
 
                     });
 
             });
-        done();
 
     });
 
@@ -66,10 +66,11 @@ describe('Users', () => {
                     .end((err, res) => {
                         res.should.have.status(200);
                         const success = res.body;
+                        done();
+
                     });
 
             });
-        done();
 
     });
     it('Done' ,(done) =>{

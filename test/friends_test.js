@@ -28,11 +28,11 @@ describe('Friends', () => {
                             })
                             .end((err, res) => {
                                 res.should.have.status(200);
+                                done();
 
                             });
                     })
             });
-        done();
     });
 
     it('Deletes a friendship', (done) => {
@@ -58,10 +58,10 @@ describe('Friends', () => {
                                 })
                                 .end((err, res) => {
                                     res.should.have.status(200);
+                                    done()
 
                                 });
                         });
-                        done()
                     });
             });
     });

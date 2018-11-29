@@ -11,6 +11,10 @@ chai.use(chaiHttp);
 
 describe('Threads', () => {
     it('Saves a thread and returns correct body', (done) => {
+        const user1 = new users.User({username: 'user1', password: '124'});
+        user1.save()
+            .then(() => {
+
 
         chai.request(server)
             .post('/threads')
@@ -25,9 +29,10 @@ describe('Threads', () => {
                 success.should.have.property('content').equals('content1');
                 success.should.have.property('title').equals('title1');
                 success.should.have.property('author');
+                done();
 
+            })
             });
-        done();
     });
 
 
@@ -40,11 +45,14 @@ describe('Threads', () => {
                     .end((err, res) => {
                         res.should.have.status(200);
                         const success = res.body;
-                        success.should.have.property('author').equals('abc');
-                        success.should.have.property('title').equals('title1');
-                        success.should.have.property('content').equals('content1');
+                        success.should.be.an('array');
+                        success.should.have.property(['comments', '_id', 'author', 'title', 'content', 'votes', '__v']);
+                        // success.should.have.property('author').equals('5bfffc8d59be863ddc72848e');
+                        // success.should.have.property('title').equals('title1');
+                        // success.should.have.property('content').equals('content1');
+                        done();
+
                     });
             });
-        done();
     })
 });

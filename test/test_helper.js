@@ -20,10 +20,11 @@ const session = neo.session();
 beforeEach((done) => {
     mongoose.connection.collections.threads.drop(() => {
         mongoose.connection.collections.users.drop(() => {
-            return session.run(
+            session.run(
                 'MATCH (n)\n' +
-                'DETACH DELETE n')
+                'DETACH DELETE n');
+            done();
+
         })
     });
-    done();
 });
