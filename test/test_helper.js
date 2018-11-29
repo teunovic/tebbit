@@ -6,12 +6,15 @@ const session = neo.session();
 
 beforeEach((done) => {
     mongoose.connection.collections.threads.drop(() => {
-        mongoose.connection.collections.users.drop(() => {
-            session.run(
-                'MATCH (n)\n' +
-                'DETACH DELETE n');
-            done();
+        mongoose.connection.collections.comments.drop(() => {
+            mongoose.connection.collections.users.drop(() => {
+                session.run(
+                    'MATCH (n)\n' +
+                    'DETACH DELETE n');
+                done();
 
-        })
+            })
+        });
     });
+
 });
