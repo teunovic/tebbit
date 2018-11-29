@@ -76,5 +76,8 @@ describe('Comments', () => {
                     });
             });
     });
+    it('Done', (done) => {
+        done();
+    });
 
 });
