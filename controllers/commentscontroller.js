@@ -105,7 +105,7 @@ function remove(req, res) {
                 })
                 .catch(err => {
                     console.error(err);
-                    res.status(501).json(new ErrorResponse(-1, "Something unexpected went wrong").getResponse());
+                    res.status(501).json(new ErrorResponse(-2, "Something unexpected went wrong").getResponse());
                 })
         })
         .catch(err => {

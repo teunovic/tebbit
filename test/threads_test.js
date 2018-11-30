@@ -113,7 +113,7 @@ describe('Threads', () => {
                     .then((thread) => {
 
                         chai.request(server)
-                            .post('threads/' + thread._id + '/vote')
+                            .post('/threads/' + thread._id + '/vote')
                             .send({'username': 'user1'})
                             .end((err, res) => {
                                 res.should.have.status(200);

@@ -27,15 +27,16 @@ function addFriend(req, res) {
             }
 
             neoQueries.getFriendship(session, username, otherName)
-                .then(friendship => {
-                    if(friendship) {
+                .then(result => {
+                    if(result && result.records.length !== 0) {
                         // Friendship bestaat al, maar vraag 2a vraagt specifiek om GEEN error in dit scenario
                         console.log("friendship already exists");
                         res.status(200).json({});
                         return;
                     }
                     neoQueries.addFriend(session, username, otherName)
-                        .then(() => {
+                        .then((result) => {
+                            console.log(result);
                             session.close();
                             res.status(200).json({});
                         })

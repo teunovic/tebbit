@@ -18,7 +18,7 @@ describe('Comments', () => {
                     .then((thread) => {
 
                         chai.request(server)
-                            .post('threads/' + thread._id + '/comments')
+                            .post('/threads/' + thread.id + '/comments')
                             .send({
                                 'username': 'user1',
                                 'content': 'test content comment on thread with title 2'
@@ -43,7 +43,7 @@ describe('Comments', () => {
                             .then((comment) => {
 
                                 chai.request(server)
-                                    .delete('threads/' + thread._id + '/comments/' + comment._id)
+                                    .delete('/threads/' + thread._id + '/comments/' + comment._id)
                                     .send({'username': 'user1'})
                                     .end((err, res) => {
                                         res.should.have.status(200);
@@ -66,7 +66,7 @@ describe('Comments', () => {
                             .then((comment) => {
 
                                 chai.request(server)
-                                    .post('threads/' + thread._id + '/comments/' + comment._id + '/vote')
+                                    .post('/threads/' + thread._id + '/comments/' + comment._id + '/vote')
                                     .send({'username': 'user1'})
                                     .end((err, res) => {
                                         res.should.have.status(200);
