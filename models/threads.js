@@ -65,6 +65,21 @@ commentSchema.virtual('points').get(function() {
 
 const Vote = mongoose.model('Vote', voteSchema);
 const Comment = mongoose.model('Comment', commentSchema);
+
+threadSchema.pre('validate', function preValidate(next) {
+    return this.calculateCommentCount().then(next);
+})
+
+User.method('calculateCommentCount', async function encryptPassword() {
+    this.passwordSalt = await encryptor.salt()
+    this.encryptedPassword = await encryptor.hash(
+        this.encryptedPassword,
+        this.passwordSalt
+    )
+})
+
 const Thread = mongoose.model('Thread', threadSchema);
+
+
 
 module.exports = {Thread, Comment, Vote};

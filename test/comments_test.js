@@ -14,7 +14,7 @@ describe('Comments', () => {
         const user1 = new users.User({username: 'user1', password: '124'});
         user1.save()
             .then((user) => {
-                threads.Thread.create({author: '5bfffc8d59be863ddc72848e', title: 'title2', content: 'content2'})
+                threads.Thread.create({author: user._id, title: 'title2', content: 'content2'})
                     .then((thread) => {
 
                         chai.request(server)
